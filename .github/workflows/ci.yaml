@@ -12,9 +12,8 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-
-      - name: setup Java
-        uses: actions/setup-java@v4
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
       - name: Build
         run: |
           ./gradlew clean build

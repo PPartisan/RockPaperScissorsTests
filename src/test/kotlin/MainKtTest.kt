@@ -1,11 +1,11 @@
+import io.kotest.matchers.string.shouldContain
+import io.kotest.matchers.string.shouldEndWith
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.params.ParameterizedTest
-import org.junit.jupiter.params.provider.MethodSource
+import org.junit.jupiter.api.Test
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.PrintStream
-import kotlin.test.assertContains
 
 class MainKtTest {
 
@@ -26,74 +26,63 @@ class MainKtTest {
         System.setOut(oOut)
     }
 
-    @ParameterizedTest
-    @MethodSource("testRockPaperScissorsParameters")
-    fun testRockPaperScissors(userInput: String, computerInput: String, expected: String, msg: String = "") {
-        userInput.enterAsUserInput()
-        runGameWithComputerChoice(computerInput)
-        assertContains(console.asString(), expected, message = msg)
+    @Test
+    fun `when user enters unrecognised input, then exit with invalid input warning`() {
+        val user = "Neither a rock nor paper nor scissors"
+        user.enterAsUserInput()
+        runGame()
+        console.asString() shouldEndWith "Invalid input: $user"
+
     }
 
-    companion object {
-        @JvmStatic
-        fun testRockPaperScissorsParameters(): List<Array<Any>> {
-            return listOf(
-                arrayOf(
-                    "Neither a rock nor paper nor scissors",
-                    "rock",
-                    "Invalid input: Neither a rock nor paper nor scissors",
-                    "when user enters unrecognised input, then exit with invalid input warning",
-                ),
-                arrayOf(
-                    "rock",
-                    "scissors",
-                    "Computer choice: scissors",
-                    "when computer player randomly selects rock, then print computer player choice",
-                ),
-                arrayOf(
-                    "paper",
-                    "rock",
-                    "win",
-                    "when computer selects rock, and user selects paper, then user wins",
-                ),
-                arrayOf(
-                    "paper",
-                    "rock",
-                    "win",
-                    "when computer selects rock, and user selects paper, then user wins",
-                ),
-                arrayOf(
-                    "scissors",
-                    "paper",
-                    "win",
-                    "when computer selects paper, and user selects scissors, then user wins",
-                ),
-                arrayOf(
-                    "rock",
-                    "scissors",
-                    "win",
-                    "when computer selects scissors, and user selects rock, then user wins",
-                ),
-                arrayOf(
-                    "scissors",
-                    "rock",
-                    "lose",
-                    "when computer selects rock, and user selects scissors, then user loses",
-                ),
-                arrayOf(
-                    "rock",
-                    "paper",
-                    "lose",
-                    "when computer selects paper, and user selects rock, then user loses",
-                ),
-                arrayOf(
-                    "paper",
-                    "scissors",
-                    "lose",
-                    "when computer selects scissors, and user selects paper, then user loses"
-                )
-            )
-        }
+    @Test
+    fun `when computer player randomly selects rock, then print computer player choice`() {
+        "rock".enterAsUserInput()
+        val computer = "scissors"
+        runGameWithComputerChoice(computer)
+        console.asString() shouldContain "Computer choice: $computer"
+    }
+
+    @Test
+    fun `when computer selects rock, and user selects paper, then user wins`() {
+        "paper".enterAsUserInput()
+        runGameWithComputerChoice("rock")
+        console.asString() shouldEndWith "win"
+    }
+
+    @Test
+    fun `when computer selects paper, and user selects scissors, then user wins`() {
+        "scissors".enterAsUserInput()
+        runGameWithComputerChoice("paper")
+        console.asString() shouldEndWith "win"
+    }
+
+    @Test
+    fun `when computer selects scissors, and user selects rock, then user wins`() {
+        "rock".enterAsUserInput()
+        runGameWithComputerChoice("scissors")
+        console.asString() shouldEndWith "win"
+    }
+
+    @Test
+    fun `when computer selects rock, and user selects scissors, then user loses`() {
+        "scissors".enterAsUserInput()
+        runGame { "rock" }
+        console.asString() shouldEndWith "lose"
+    }
+
+    @Test
+    fun `when computer selects paper, and user selects rock, then user loses`() {
+        "rock".enterAsUserInput()
+        runGameWithComputerChoice("paper")
+        console.asString() shouldEndWith "lose"
+    }
+
+    @Test
+    fun `when computer selects scissors, and user selects paper, then user loses`() {
+        "paper".enterAsUserInput()
+        runGameWithComputerChoice("scissors")
+        console.asString() shouldEndWith "lose"
     }
 
     private fun runGameWithComputerChoice(choice: String) =

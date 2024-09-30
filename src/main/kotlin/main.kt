@@ -1,6 +1,12 @@
 fun main() {
-    val game = Game()
-    game()
+    while (true){
+        val game = Game()
+        game()
+        println("Restart game?[Y/n]")
+        if (readln() == "n"){
+            return
+        }
+    }
 }
 
 class Game(

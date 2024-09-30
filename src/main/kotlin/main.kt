@@ -3,15 +3,15 @@ fun main() {
     game()
 }
 
-class Game(
+open class Game(
     private val rnd: (List<String>) -> String = { it.random() }
 ) {
-    operator fun invoke() {
+    open operator fun invoke() {
         val choices = listOf("rock", "paper", "scissors")
         val compChoice = rnd(choices)
         println("Enter choice:")
         val userIn = readln()
-        if (userIn !in choices) {
+        if(userIn !in choices) {
             println("Invalid input: $userIn")
             return
         }
@@ -26,5 +26,15 @@ class Game(
             "scissors rock" -> println("win")
             else -> println("lose")
         }
+    }
+}
+
+class RepeatGames(
+    private val generator: () -> Game = { Game() }
+) {
+    fun start() {
+        do {
+            generator()()
+        } while(readln() != "n")
     }
 }

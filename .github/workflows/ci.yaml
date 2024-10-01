@@ -17,6 +17,3 @@ jobs:
       - name: Build (Test)
         run: |
           ./gradlew clean build
-      - name: Detekt (Format and Lint)
-        run: |
-          ./gradlew detekt

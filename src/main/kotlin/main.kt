@@ -1,7 +1,4 @@
-fun main() {
-    val game = Game()
-    game()
-}
+fun main() = RepeatGames().start()
 
 open class Game(
     private val rnd: (List<String>) -> String = { it.random() },
@@ -33,12 +30,15 @@ open class Game(
 }
 
 class RepeatGames(
+    private val output: UserOutput = UserOutput(),
+    private val input: UserInput = UserInput(),
     private val generator: () -> Game = { Game() }
 ) {
     fun start() {
         do {
             generator()()
-        } while(readln() != "n")
+            output.display("Play another game (Enter 'n' or 'no' to exit)?")
+        } while(input.line().orEmpty().lowercase() !in arrayOf("n", "no"))
     }
 }
 

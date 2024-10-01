@@ -1,4 +1,5 @@
 import io.kotest.matchers.ints.shouldBeExactly
+import io.mockk.*
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -6,43 +7,56 @@ import java.io.ByteArrayInputStream
 
 class RepeatGamesTest {
 
-    private val oIn = System.`in`
-
-    private var counter : Int = 0
-
+    private lateinit var input: UserInput
+    private lateinit var output: UserOutput
+    private lateinit var game: Game
     private lateinit var repeat: RepeatGames
 
     @BeforeEach
     fun setUp() {
-        val generator : () -> Game = { object: Game() {
-            override operator fun invoke() { counter++ }
-        } }
-        repeat = RepeatGames(generator)
-    }
+        input = mockk()
+        every { input.line() } returns ""
 
-    @AfterEach
-    fun tearDown() {
-        counter = 0
-        System.setIn(oIn)
+        output = mockk()
+        every { output.display(any()) } just runs
+
+        game = mockk<Game>()
+        every { game() } just runs
+
+        repeat = RepeatGames(output, input) { game }
     }
 
     @Test
     fun `given game finished, when user enters n on keyboard, then run one game`() {
-        "n".enterAsUserInput()
+        "n".enterUserInput()
         repeat.start()
-        counter shouldBeExactly 1
+        verify(exactly = 1) { game() }
+    }
+
+    @Test
+    fun `given game finished, when user enters no on keyboard, then run one game`() {
+        "no".enterUserInput()
+        repeat.start()
+        verify(exactly = 1) { game() }
     }
 
     @Test
     fun `given game finished, when user requests another game, and then enters n on keyboard, then run two games `() {
-        "y\nn".enterAsUserInput()
+        listOf("y", "n").enterUserInput()
         repeat.start()
-        counter shouldBeExactly 2
+        verify(exactly = 2) { game() }
     }
 
-    companion object {
-        private fun String.enterAsUserInput() =
-            System.setIn(ByteArrayInputStream(toByteArray()))
+    @Test
+    fun `given game finished, when user requests another game with no input, and then enters n on keyboard, then run two games `() {
+        listOf("", "n").enterUserInput()
+        repeat.start()
+        verify(exactly = 2) { game() }
     }
+
+    private fun String.enterUserInput() =
+        listOf(this).enterUserInput()
+    private fun List<String>.enterUserInput() =
+        every { input.line() } returnsMany this
 
 }

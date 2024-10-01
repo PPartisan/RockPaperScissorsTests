@@ -1,4 +1,7 @@
 import io.kotest.matchers.ints.shouldBeExactly
+import io.kotest.matchers.shouldBe
+import io.kotest.matchers.string.shouldContain
+import io.kotest.matchers.string.shouldEndWith
 import io.mockk.*
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -52,6 +55,24 @@ class RepeatGamesTest {
         listOf("", "n").enterUserInput()
         repeat.start()
         verify(exactly = 2) { game() }
+    }
+
+    @Test
+    fun `when game finished, then show next game prompt`() {
+        "n".enterUserInput()
+        repeat.start()
+        verify { output.display(withArg {
+            it shouldBe  "Play another game (Enter 'n' or 'no' to exit)?"
+        }) }
+    }
+
+    @Test
+    fun `given two games, when games finished, then show next game prompt appears twice`() {
+        listOf("yes", "no").enterUserInput()
+        repeat.start()
+        verify(exactly = 2) { output.display(withArg {
+            it shouldBe "Play another game (Enter 'n' or 'no' to exit)?"
+        }) }
     }
 
     private fun String.enterUserInput() =

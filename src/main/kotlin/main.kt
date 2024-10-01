@@ -4,27 +4,30 @@ fun main() {
 }
 
 open class Game(
-    private val rnd: (List<String>) -> String = { it.random() }
+    private val rnd: (List<String>) -> String = { it.random() },
+    private val input: UserInput = UserInput(),
+    private val output: UserOutput = UserOutput()
 ) {
     open operator fun invoke() {
         val choices = listOf("rock", "paper", "scissors")
         val compChoice = rnd(choices)
-        println("Enter choice:")
-        val userIn = readln()
+        output.display("Enter choice:")
+        val userIn = input.line()
         if(userIn !in choices) {
-            println("Invalid input: $userIn")
+            output.display("Invalid input: $userIn")
             return
         }
-        println("Computer choice: $compChoice")
-        if (compChoice == userIn) {
-            println("draw")
+
+        output.display("Computer choice: $compChoice")
+        if(compChoice == userIn) {
+            output.display("draw")
             return
         }
-        when ("$compChoice $userIn") {
-            "rock paper" -> println("win")
-            "paper scissors" -> println("win")
-            "scissors rock" -> println("win")
-            else -> println("lose")
+        when("$compChoice $userIn") {
+            "rock paper" -> output.display("win")
+            "paper scissors" -> output.display("win")
+            "scissors rock" -> output.display("win")
+            else -> output.display("lose")
         }
     }
 }
@@ -37,4 +40,12 @@ class RepeatGames(
             generator()()
         } while(readln() != "n")
     }
+}
+
+class UserInput {
+    fun line() : String? = readlnOrNull()
+}
+
+class UserOutput {
+    fun display(line: String) = println(line)
 }

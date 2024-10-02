@@ -74,7 +74,7 @@ class MainKtTest {
     @Test
     fun `when computer selects paper, and user selects rock, then user loses`() {
         "rock".enterAsUserInput()
-        runGameWithComputerChoice( "paper")
+        runGameWithComputerChoice("paper")
         console.asString() shouldEndWith "lose"
     }
 
@@ -94,6 +94,7 @@ class MainKtTest {
 
     private fun String.enterAsUserInput() =
         System.setIn(ByteArrayInputStream(toByteArray()))
+
     private fun ByteArrayOutputStream.asString() =
         toString().trim()
 }

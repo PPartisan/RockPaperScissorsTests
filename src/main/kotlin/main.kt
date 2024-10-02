@@ -1,11 +1,11 @@
 fun main() = RepeatGames().start()
 
-open class Game(
+class Game(
     private val rnd: (List<String>) -> String = { it.random() },
     private val input: UserInput = UserInput(),
     private val output: UserOutput = UserOutput()
 ) {
-    open operator fun invoke() {
+    operator fun invoke() {
         val choices = listOf("rock", "paper", "scissors")
         val compChoice = rnd(choices)
         output.display("Enter choice:")

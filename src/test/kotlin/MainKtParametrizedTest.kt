@@ -52,7 +52,7 @@ class MainKtParametrizedTest {
                 ),
                 arrayOf(
                     "paper",
-                    "rock",
+                    "scissors",
                     "win",
                     "when computer selects rock, and user selects paper, then user wins",
                 ),
